@@ -112,10 +112,6 @@ def delete_user(user_id):
     deleted = user_service.delete_user(user_id)
 
     if not deleted:
-        return jsonify({
-            "error": "User not found"
-        }), 404
+        return jsonify({"error": "User not found"}), 404
 
-    return jsonify({
-        "message": "User deleted successfully"
-    }), 200
+    return jsonify({"message": "User deleted successfully"}), 200

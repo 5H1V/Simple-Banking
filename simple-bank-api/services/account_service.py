@@ -26,7 +26,6 @@ class AccountService:
         )
 
         self.account_repository.next_id += 1
-
         account = self.account_repository.save(account)
 
         return account, None

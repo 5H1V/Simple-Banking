@@ -9,12 +9,9 @@ from repos.repositories import (
 from services.account_service import AccountService
 from services.transaction_service import TransactionService
 
-
 account_controller = Blueprint("account_controller", __name__)
 
-transaction_service = TransactionService(
-    transaction_repository
-)
+transaction_service = TransactionService(transaction_repository)
 
 account_service = AccountService(
     account_repository,
