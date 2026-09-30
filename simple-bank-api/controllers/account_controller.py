@@ -86,7 +86,7 @@ def withdraw(account_id):
 # GET /api/accounts/<id>/transactions
 @account_controller.route("/accounts/<account_id>/transactions", methods=["GET"])
 def get_transactions(account_id):
-    transactions, error = (account_service.get_transactions(account_id))
+    transactions, error = account_service.get_transactions(account_id)
     if error:
         return jsonify({"error": error}), 404
     

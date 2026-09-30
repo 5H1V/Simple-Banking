@@ -1,5 +1,12 @@
 class Transaction:
-    def __init__(self, txn_id, account_id, txn_type, amount):
+
+    def __init__(
+        self,
+        txn_id=None,
+        account_id=None,
+        txn_type=None,
+        amount=None
+    ):
         self.txn_id = txn_id
         self.account_id = account_id
         self.txn_type = txn_type
@@ -7,8 +14,8 @@ class Transaction:
 
     def to_dict(self):
         return {
-            "transactionId": self.txn_id,
+            "txnId": self.txn_id,
             "accountId": self.account_id,
-            "type": self.txn_type,
+            "txnType": self.txn_type,
             "amount": self.amount
         }
