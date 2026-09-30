@@ -1,6 +1,6 @@
-from flask import Blueprint
+from fastapi import APIRouter
 
-transaction_controller = Blueprint(
-    "transaction_controller",
-    __name__
+transaction_controller = APIRouter(
+    prefix="/transactions",
+    tags=["Transactions"]
 )

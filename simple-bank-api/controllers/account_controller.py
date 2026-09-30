@@ -1,4 +1,5 @@
-from flask import Blueprint, jsonify, request
+from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel
 
 from repos.repositories import (
     user_repository,
@@ -9,9 +10,14 @@ from repos.repositories import (
 from services.account_service import AccountService
 from services.transaction_service import TransactionService
 
-account_controller = Blueprint("account_controller", __name__)
+account_controller = APIRouter(
+    prefix="/accounts",
+    tags=["Accounts"]
+)
 
-transaction_service = TransactionService(transaction_repository)
+transaction_service = TransactionService(
+    transaction_repository
+)
 
 account_service = AccountService(
     account_repository,
@@ -19,75 +25,114 @@ account_service = AccountService(
     transaction_service
 )
 
-# POST /api/accounts
-@account_controller.route("/accounts", methods=["POST"])
-def create_account():
-    data = request.get_json()
-    if not data:
-        return jsonify({"error": "Request body is required"}), 400
+class CreateAccountRequest(BaseModel):
+    userId: str
+    accountType: str
 
-    if "userId" not in data:
-        return jsonify({"error": "userId is required"}), 400
+class AmountRequest(BaseModel):
+    amount: float
 
-    if "accountType" not in data:
-        return jsonify({"error": "accountType is required"}), 400
+@account_controller.post("", status_code=201)
+def create_account(data: CreateAccountRequest):
 
-    account, error = account_service.create_account(data["userId"],
-                                                    data["accountType"])
+    account, error = account_service.create_account(
+        data.userId,
+        data.accountType
+    )
+
     if error:
-        return jsonify({"error": error}), 404
+        raise HTTPException(
+            status_code=404,
+            detail=error
+        )
 
-    return jsonify(account.to_dict()), 201
+    return account.to_dict()
 
-# GET /api/accounts/<id>
-@account_controller.route("/accounts/<account_id>", methods=["GET"])
-def get_account(account_id):
-    account = account_service.get_account(account_id)
+
+@account_controller.get("/{account_id}")
+def get_account(account_id: str):
+
+    account = account_service.get_account(
+        account_id
+    )
+
     if account is None:
-        return jsonify({"error": "Account not found"}), 404
+        raise HTTPException(
+            status_code=404,
+            detail="Account not found"
+        )
 
-    return jsonify(account.to_dict()), 200
+    return account.to_dict()
 
-# POST /api/accounts/<id>/deposit
-@account_controller.route("/accounts/<account_id>/deposit", methods=["POST"])
-def deposit(account_id):
-    data = request.get_json()
-    if not data:
-        return jsonify({"error": "Request body is required"}), 400
 
-    if "amount" not in data:
-        return jsonify({"error": "amount is required"}), 400
+@account_controller.post("/{account_id}/deposit")
+def deposit(
+    account_id: str,
+    data: AmountRequest
+):
 
-    account, error = account_service.deposit(account_id, data["amount"])
+    account, error = account_service.deposit(
+        account_id,
+        data.amount
+    )
+
     if error:
-        status_code = 404
-        if error == "Deposit amount must be positive":
-            status_code = 400
-        
-        return jsonify({"error": error}), status_code
-    return jsonify(account.to_dict()), 200
 
-# POST /api/accounts/<id>/withdraw
-@account_controller.route("/accounts/<account_id>/withdraw", methods=["POST"])
-def withdraw(account_id):
-    data = request.get_json()
-    if not data:
-        return jsonify({"error": "Request body is required"}), 400
+        if error == "Account not found":
+            raise HTTPException(
+                status_code=404,
+                detail=error
+            )
 
-    if "amount" not in data:
-        return jsonify({"error": "amount is required"}), 400
+        raise HTTPException(
+            status_code=400,
+            detail=error
+        )
 
-    account, error = account_service.withdraw(account_id, data["amount"])
+    return account.to_dict()
+
+
+@account_controller.post("/{account_id}/withdraw")
+def withdraw(
+    account_id: str,
+    data: AmountRequest
+):
+
+    account, error = account_service.withdraw(
+        account_id,
+        data.amount
+    )
+
     if error:
-        return jsonify({"error": error}), 400 if error != "Account not found" else 404
 
-    return jsonify(account.to_dict()), 200
+        if error == "Account not found":
+            raise HTTPException(
+                status_code=404,
+                detail=error
+            )
 
-# GET /api/accounts/<id>/transactions
-@account_controller.route("/accounts/<account_id>/transactions", methods=["GET"])
-def get_transactions(account_id):
-    transactions, error = account_service.get_transactions(account_id)
+        raise HTTPException(
+            status_code=400,
+            detail=error
+        )
+
+    return account.to_dict()
+
+
+@account_controller.get("/{account_id}/transactions")
+def get_transactions(account_id: str):
+
+    transactions, error = account_service.get_transactions(
+        account_id
+    )
+
     if error:
-        return jsonify({"error": error}), 404
-    
-    return jsonify([transaction.to_dict() for transaction in transactions]), 200
+        raise HTTPException(
+            status_code=404,
+            detail=error
+        )
+
+    return [
+        transaction.to_dict()
+        for transaction in transactions
+    ]

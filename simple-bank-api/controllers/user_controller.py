@@ -1,117 +1,108 @@
-from flask import Blueprint, request, jsonify
+from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel
 
 from models.user import User
 from services.user_service import UserService
 from repos.repositories import user_repository
 
 
-user_controller = Blueprint("user_controller", __name__)
+user_controller = APIRouter(
+    prefix="/users",
+    tags=["Users"]
+)
 
 user_service = UserService(user_repository)
 
 
-# GET /api/users
-@user_controller.route("/users", methods=["GET"])
+class UserRequest(BaseModel):
+    name: str
+    email: str
+
+
+@user_controller.get("")
 def get_all_users():
+
     users = user_service.get_all_users()
 
-    return jsonify([
+    return [
         user.to_dict()
         for user in users
-    ]), 200
+    ]
 
 
-# GET /api/users/<id>
-@user_controller.route("/users/<user_id>", methods=["GET"])
-def get_user(user_id):
+@user_controller.get("/{user_id}")
+def get_user(user_id: str):
+
     user = user_service.get_user_by_id(user_id)
 
     if user is None:
-        return jsonify({
-            "error": "User not found"
-        }), 404
+        raise HTTPException(
+            status_code=404,
+            detail="User not found"
+        )
 
-    return jsonify(user.to_dict()), 200
+    return user.to_dict()
 
 
-# POST /api/users
-@user_controller.route("/users", methods=["POST"])
-def create_user():
-    data = request.get_json()
-
-    if not data:
-        return jsonify({
-            "error": "Request body is required"
-        }), 400
-
-    if "name" not in data:
-        return jsonify({
-            "error": "Name is required"
-        }), 400
-
-    if "email" not in data:
-        return jsonify({
-            "error": "Email is required"
-        }), 400
+@user_controller.post("", status_code=201)
+def create_user(data: UserRequest):
 
     user = User(
         user_id=None,
-        name=data["name"],
-        email=data["email"]
+        name=data.name,
+        email=data.email
     )
 
     created_user, error = user_service.create_user(user)
 
     if error:
-        return jsonify({
-            "error": error
-        }), 400
+        raise HTTPException(
+            status_code=400,
+            detail=error
+        )
 
-    return jsonify(created_user.to_dict()), 201
+    return created_user.to_dict()
 
 
-# PUT /api/users/<id>
-@user_controller.route("/users/<user_id>", methods=["PUT"])
-def update_user(user_id):
-    data = request.get_json()
-
-    if not data:
-        return jsonify({
-            "error": "Request body is required"
-        }), 400
-
-    if "name" not in data:
-        return jsonify({
-            "error": "Name is required"
-        }), 400
-
-    if "email" not in data:
-        return jsonify({
-            "error": "Email is required"
-        }), 400
+@user_controller.put("/{user_id}")
+def update_user(
+    user_id: str,
+    data: UserRequest
+):
 
     user, error = user_service.update_user(
         user_id,
-        data["name"],
-        data["email"]
+        data.name,
+        data.email
     )
 
     if error:
-        status_code = 404 if error == "User not found" else 400
 
-        return jsonify({
-            "error": error
-        }), status_code
+        if error == "User not found":
+            raise HTTPException(
+                status_code=404,
+                detail=error
+            )
 
-    return jsonify(user.to_dict()), 200
+        raise HTTPException(
+            status_code=400,
+            detail=error
+        )
+
+    return user.to_dict()
 
 
-# DELETE /api/users/<id>
-@user_controller.route("/users/<user_id>", methods=["DELETE"])
-def delete_user(user_id):
+@user_controller.delete("/{user_id}")
+def delete_user(user_id: str):
+
     deleted = user_service.delete_user(user_id)
 
     if not deleted:
-        return jsonify({"error": "User not found"}), 404
+        raise HTTPException(
+            status_code=404,
+            detail="User not found"
+        )
 
-    return jsonify({"message": "User deleted successfully"}), 200
+    return {
+        "message": "User deleted successfully"
+    }
