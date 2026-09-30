@@ -22,7 +22,7 @@ def get_all_users():
 
 
 # GET /api/users/<id>
-@user_controller.route("/users/<int:user_id>", methods=["GET"])
+@user_controller.route("/users/<user_id>", methods=["GET"])
 def get_user(user_id):
     user = user_service.get_user_by_id(user_id)
 
@@ -71,7 +71,7 @@ def create_user():
 
 
 # PUT /api/users/<id>
-@user_controller.route("/users/<int:user_id>", methods=["PUT"])
+@user_controller.route("/users/<user_id>", methods=["PUT"])
 def update_user(user_id):
     data = request.get_json()
 
@@ -107,7 +107,7 @@ def update_user(user_id):
 
 
 # DELETE /api/users/<id>
-@user_controller.route("/users/<int:user_id>", methods=["DELETE"])
+@user_controller.route("/users/<user_id>", methods=["DELETE"])
 def delete_user(user_id):
     deleted = user_service.delete_user(user_id)
 

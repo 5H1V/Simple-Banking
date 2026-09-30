@@ -1,41 +1,84 @@
+from bson import ObjectId
+from database import db
 from models.account import Account
 
+
 class AccountRepository:
+
     def __init__(self):
-        self.accounts = [Account(1, 1, "SAVINGS", 1000.00)]
-        self.next_id = 2
+        self.collection = db["accounts"]
 
     def find_all(self):
-        return self.accounts
+        accounts = self.collection.find()
 
-    def find_by_id(self, account_id):
-        for account in self.accounts:
-            if account.account_id == account_id:
-                return account
-
-        return None
-
-    def find_by_user_id(self, user_id):
         return [
-            account for account in self.accounts
-            if account.user_id == user_id
+            Account(
+                account_id=str(account["_id"]),
+                user_id=account["user_id"],
+                balance=account["balance"],
+                account_type=account["account_type"]
+            )
+            for account in accounts
         ]
 
-    def save(self, account):
-        existing = self.find_by_id(account.account_id)
-        if existing:
-            existing.user_id = account.user_id
-            existing.account_type = account.account_type
-            existing.balance = account.balance
-            return existing
+    def find_by_id(self, account_id):
+        try:
+            object_id = ObjectId(account_id)
+        except Exception:
+            return None
 
-        self.accounts.append(account)
+        account = self.collection.find_one({
+            "_id": object_id
+        })
+
+        if account is None:
+            return None
+
+        return Account(
+            account_id=str(account["_id"]),
+            user_id=account["user_id"],
+            balance=account["balance"],
+            account_type=account["account_type"]
+        )
+
+    def save(self, account):
+
+        if account.account_id is None:
+
+            result = self.collection.insert_one({
+                "user_id": account.user_id,
+                "balance": account.balance,
+                "account_type": account.account_type
+            })
+
+            account.account_id = str(result.inserted_id)
+
+        else:
+
+            self.collection.update_one(
+                {
+                    "_id": ObjectId(account.account_id)
+                },
+                {
+                    "$set": {
+                        "user_id": account.user_id,
+                        "balance": account.balance,
+                        "account_type": account.account_type
+                    }
+                }
+            )
+
         return account
 
     def delete_by_id(self, account_id):
-        account = self.find_by_id(account_id)
-        if account:
-            self.accounts.remove(account)
-            return True
-        
-        return False
+
+        try:
+            object_id = ObjectId(account_id)
+        except Exception:
+            return False
+
+        result = self.collection.delete_one({
+            "_id": object_id
+        })
+
+        return result.deleted_count > 0

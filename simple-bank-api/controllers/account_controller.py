@@ -40,7 +40,7 @@ def create_account():
     return jsonify(account.to_dict()), 201
 
 # GET /api/accounts/<id>
-@account_controller.route("/accounts/<int:account_id>", methods=["GET"])
+@account_controller.route("/accounts/<account_id>", methods=["GET"])
 def get_account(account_id):
     account = account_service.get_account(account_id)
     if account is None:
@@ -49,7 +49,7 @@ def get_account(account_id):
     return jsonify(account.to_dict()), 200
 
 # POST /api/accounts/<id>/deposit
-@account_controller.route("/accounts/<int:account_id>/deposit", methods=["POST"])
+@account_controller.route("/accounts/<account_id>/deposit", methods=["POST"])
 def deposit(account_id):
     data = request.get_json()
     if not data:
@@ -68,7 +68,7 @@ def deposit(account_id):
     return jsonify(account.to_dict()), 200
 
 # POST /api/accounts/<id>/withdraw
-@account_controller.route("/accounts/<int:account_id>/withdraw", methods=["POST"])
+@account_controller.route("/accounts/<account_id>/withdraw", methods=["POST"])
 def withdraw(account_id):
     data = request.get_json()
     if not data:
@@ -84,7 +84,7 @@ def withdraw(account_id):
     return jsonify(account.to_dict()), 200
 
 # GET /api/accounts/<id>/transactions
-@account_controller.route("/accounts/<int:account_id>/transactions", methods=["GET"])
+@account_controller.route("/accounts/<account_id>/transactions", methods=["GET"])
 def get_transactions(account_id):
     transactions, error = (account_service.get_transactions(account_id))
     if error:

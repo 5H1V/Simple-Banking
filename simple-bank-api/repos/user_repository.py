@@ -1,48 +1,94 @@
+from bson import ObjectId
+from database import db
+from models.user import User
+
+
 class UserRepository:
 
     def __init__(self):
-        self.users = []
-        self.next_id = 1
+        self.collection = db["users"]
 
     def find_all(self):
-        return self.users
+        users = self.collection.find()
+
+        return [
+            User(
+                user_id=str(user["_id"]),
+                name=user["name"],
+                email=user["email"]
+            )
+            for user in users
+        ]
 
     def find_by_id(self, user_id):
-        for user in self.users:
-            if user.user_id == user_id:
-                return user
+        try:
+            object_id = ObjectId(user_id)
+        except Exception:
+            return None
 
-        return None
+        user = self.collection.find_one({
+            "_id": object_id
+        })
+
+        if user is None:
+            return None
+
+        return User(
+            user_id=str(user["_id"]),
+            name=user["name"],
+            email=user["email"]
+        )
 
     def find_by_email(self, email):
-        for user in self.users:
-            if user.email.lower() == email.lower():
-                return user
+        user = self.collection.find_one({
+            "email": email
+        })
 
-        return None
+        if user is None:
+            return None
+
+        return User(
+            user_id=str(user["_id"]),
+            name=user["name"],
+            email=user["email"]
+        )
 
     def save(self, user):
+
         if user.user_id is None:
-            user.user_id = self.next_id
-            self.next_id += 1
 
-            self.users.append(user)
+            result = self.collection.insert_one({
+                "name": user.name,
+                "email": user.email
+            })
+
+            user.user_id = str(result.inserted_id)
+
         else:
-            existing_user = self.find_by_id(user.user_id)
 
-            if existing_user is None:
-                self.users.append(user)
-            else:
-                existing_user.name = user.name
-                existing_user.email = user.email
+            self.collection.update_one(
+                {
+                    "_id": ObjectId(user.user_id)
+                },
+                {
+                    "$set": {
+                        "name": user.name,
+                        "email": user.email
+                    }
+                }
+            )
 
         return user
 
     def delete_by_id(self, user_id):
-        user = self.find_by_id(user_id)
 
-        if user is None:
+        try:
+            object_id = ObjectId(user_id)
+        except Exception:
             return False
 
-        self.users.remove(user)
-        return True
+        result = self.collection.delete_one({
+            "_id": object_id
+        })
+
+        return result.deleted_count > 0
