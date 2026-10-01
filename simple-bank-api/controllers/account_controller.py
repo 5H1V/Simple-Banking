@@ -34,28 +34,15 @@ class AmountRequest(BaseModel):
 
 @account_controller.post("", status_code=201)
 def create_account(data: CreateAccountRequest):
-
-    account, error = account_service.create_account(
-        data.userId,
-        data.accountType
-    )
-
+    account, error = account_service.create_account(data.userId, data.accountType)
     if error:
-        raise HTTPException(
-            status_code=404,
-            detail=error
-        )
+        raise HTTPException(status_code=404, detail=error)
 
     return account.to_dict()
 
-
 @account_controller.get("/{account_id}")
 def get_account(account_id: str):
-
-    account = account_service.get_account(
-        account_id
-    )
-
+    account = account_service.get_account(account_id)
     if account is None:
         raise HTTPException(
             status_code=404,
@@ -64,26 +51,15 @@ def get_account(account_id: str):
 
     return account.to_dict()
 
-
 @account_controller.post("/{account_id}/deposit")
-def deposit(
-    account_id: str,
-    data: AmountRequest
-):
-
-    account, error = account_service.deposit(
-        account_id,
-        data.amount
-    )
-
+def deposit(account_id: str, data: AmountRequest):
+    account, error = account_service.deposit(account_id, data.amount)
     if error:
-
         if error == "Account not found":
             raise HTTPException(
                 status_code=404,
                 detail=error
             )
-
         raise HTTPException(
             status_code=400,
             detail=error
@@ -91,48 +67,31 @@ def deposit(
 
     return account.to_dict()
 
-
 @account_controller.post("/{account_id}/withdraw")
-def withdraw(
-    account_id: str,
-    data: AmountRequest
-):
-
+def withdraw(account_id: str, data: AmountRequest):
     account, error = account_service.withdraw(
         account_id,
         data.amount
     )
-
     if error:
-
         if error == "Account not found":
             raise HTTPException(
                 status_code=404,
                 detail=error
             )
-
         raise HTTPException(
             status_code=400,
             detail=error
         )
-
     return account.to_dict()
-
 
 @account_controller.get("/{account_id}/transactions")
 def get_transactions(account_id: str):
-
-    transactions, error = account_service.get_transactions(
-        account_id
-    )
-
+    transactions, error = account_service.get_transactions(account_id)
     if error:
         raise HTTPException(
             status_code=404,
             detail=error
         )
 
-    return [
-        transaction.to_dict()
-        for transaction in transactions
-    ]
+    return [transaction.to_dict() for transaction in transactions]

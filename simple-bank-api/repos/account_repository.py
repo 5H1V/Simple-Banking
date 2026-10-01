@@ -2,9 +2,7 @@ from bson import ObjectId
 from database import db
 from models.account import Account
 
-
 class AccountRepository:
-
     def __init__(self):
         self.collection = db["accounts"]
 
@@ -42,19 +40,14 @@ class AccountRepository:
         )
 
     def save(self, account):
-
         if account.account_id is None:
-
             result = self.collection.insert_one({
                 "user_id": account.user_id,
                 "balance": account.balance,
                 "account_type": account.account_type
             })
-
             account.account_id = str(result.inserted_id)
-
         else:
-
             self.collection.update_one(
                 {
                     "_id": ObjectId(account.account_id)
@@ -67,11 +60,9 @@ class AccountRepository:
                     }
                 }
             )
-
         return account
 
     def delete_by_id(self, account_id):
-
         try:
             object_id = ObjectId(account_id)
         except Exception:

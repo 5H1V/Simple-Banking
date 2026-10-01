@@ -1,5 +1,4 @@
 class UserService:
-
     def __init__(self, user_repository):
         self.user_repository = user_repository
 
@@ -20,7 +19,6 @@ class UserService:
 
     def update_user(self, user_id, name, email):
         user = self.user_repository.find_by_id(user_id)
-
         if user is None:
             return None, "User not found"
 
@@ -29,22 +27,16 @@ class UserService:
 
         existing_email_user = self.user_repository.find_by_email(email)
 
-        if (
-            existing_email_user is not None
-            and existing_email_user.user_id != user_id
-        ):
+        if (existing_email_user is not None and existing_email_user.user_id != user_id):
             return None, "Email already exists"
 
         user.name = name
         user.email = email
-
         self.user_repository.save(user)
-
         return user, None
 
     def delete_user(self, user_id):
         user = self.user_repository.find_by_id(user_id)
-
         if user is None:
             return False
 
