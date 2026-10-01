@@ -1,16 +1,14 @@
-# React + Vite
+# Simple Bank UI
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React and Vite frontend for Simple Bank.
 
-Currently, two official plugins are available:
+## Run locally
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+```sh
+npm install
+npm run dev
+```
 
-## React Compiler
+The welcome page is available at `/`. User management is at `/users`. Visit `/accounts` to create an account for an existing user or look up account details by account ID. To deposit or withdraw from an existing account, visit `/transactions` and enter its account ID and a positive amount (up to two decimal places). The API must be running at `http://127.0.0.1:5000`. Direct visits to these routes work in the Vite dev server; production hosts must serve `index.html` for client-side routes.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Run `npm run build` to build for production and `npm run lint` to check the source.

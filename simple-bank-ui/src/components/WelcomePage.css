@@ -1,0 +1,99 @@
+.welcome-page {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    background: #f4f6f8;
+}
+
+.welcome-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 20px max(24px, calc((100vw - 1100px) / 2));
+    background: #1f2937;
+    color: white;
+}
+
+.welcome-header nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.welcome-header a {
+    color: white;
+    text-decoration: none;
+}
+
+.welcome-header a:hover,
+.welcome-header a:focus-visible {
+    text-decoration: underline;
+}
+
+.welcome-brand {
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.welcome-main {
+    flex: 1;
+    display: grid;
+    place-items: center;
+    padding: 48px 24px;
+}
+
+.welcome-hero {
+    width: min(100%, 720px);
+    padding: clamp(32px, 6vw, 64px);
+    border-radius: 16px;
+    background: white;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.welcome-eyebrow {
+    color: #1d4ed8;
+    font-weight: bold;
+}
+
+.welcome-hero h1 {
+    margin: 16px 0;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    line-height: 1.15;
+    color: #1f2937;
+}
+
+.welcome-description {
+    margin-bottom: 32px;
+    color: #4b5563;
+    line-height: 1.6;
+}
+
+.welcome-action {
+    display: inline-block;
+    padding: 12px 20px;
+    border-radius: 6px;
+    background: #2563eb;
+    color: white;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.welcome-action + .welcome-action {
+    margin-left: 12px;
+}
+
+.welcome-action:hover,
+.welcome-action:focus-visible {
+    background: #1d4ed8;
+}
+
+@media (max-width: 600px) {
+    .welcome-header {
+        flex-wrap: wrap;
+    }
+
+    .welcome-action + .welcome-action {
+        margin: 12px 0 0;
+    }
+}

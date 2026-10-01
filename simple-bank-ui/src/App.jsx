@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 import UserForm from "./components/UserForm";
 import UserList from "./components/UserList";
@@ -146,6 +147,14 @@ function App() {
                 <p>
                     User Management
                 </p>
+
+                <nav aria-label="Main navigation">
+                    <Link to="/">Home</Link>
+                    {" | "}
+                    <Link to="/accounts">Accounts</Link>
+                    {" | "}
+                    <Link to="/transactions">Deposit / Withdraw</Link>
+                </nav>
 
             </header>
 

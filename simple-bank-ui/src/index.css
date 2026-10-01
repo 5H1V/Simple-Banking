@@ -66,6 +66,14 @@ body {
   box-sizing: border-box;
 }
 
+#root:has(.welcome-page),
+#root:has(.transactions-page),
+#root:has(.accounts-page) {
+  width: 100%;
+  border: 0;
+  text-align: left;
+}
+
 h1,
 h2 {
   font-family: var(--heading);
@@ -108,4 +116,10 @@ code {
   line-height: 135%;
   padding: 4px 8px;
   background: var(--code-bg);
+}
+
+.not-found {
+  max-width: 680px;
+  margin: 80px auto;
+  padding: 24px;
 }
