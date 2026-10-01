@@ -8,9 +8,7 @@ function UserForm({
 
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
-
     useEffect(() => {
-
         if (selectedUser) {
             setName(selectedUser.name);
             setEmail(selectedUser.email);
@@ -18,35 +16,26 @@ function UserForm({
             setName("");
             setEmail("");
         }
-
     }, [selectedUser]);
 
-
     const handleSubmit = (event) => {
-
         event.preventDefault();
-
         onSubmit({
             name,
             email
         });
     };
 
-
     return (
         <div className="form-container">
-
             <h2>
                 {selectedUser
                     ? "Edit User"
                     : "Add User"}
             </h2>
-
             <form onSubmit={handleSubmit}>
-
                 <div className="form-group">
                     <label>Name</label>
-
                     <input
                         type="text"
                         value={name}
@@ -57,11 +46,8 @@ function UserForm({
                         required
                     />
                 </div>
-
-
                 <div className="form-group">
                     <label>Email</label>
-
                     <input
                         type="email"
                         value={email}
@@ -72,16 +58,12 @@ function UserForm({
                         required
                     />
                 </div>
-
-
                 <div className="form-buttons">
-
                     <button type="submit">
                         {selectedUser
                             ? "Update User"
                             : "Add User"}
                     </button>
-
                     {selectedUser && (
                         <button
                             type="button"
@@ -90,11 +72,8 @@ function UserForm({
                             Cancel
                         </button>
                     )}
-
                 </div>
-
             </form>
-
         </div>
     );
 }

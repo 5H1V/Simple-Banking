@@ -14,58 +14,34 @@ import {
 
 import "./App.css";
 
-
 function App() {
-
     const [users, setUsers] = useState([]);
-
-    const [selectedUser, setSelectedUser] =
-        useState(null);
-
-    const [searchedUser, setSearchedUser] =
-        useState(null);
-
-    const [message, setMessage] =
-        useState("");
-
-    const [error, setError] =
-        useState("");
-
+    const [selectedUser, setSelectedUser] = useState(null);
+    const [searchedUser, setSearchedUser] = useState(null);
+    const [message, setMessage] = useState("");
+    const [error, setError] = useState("");
 
     // -----------------------------
     // GET ALL USERS
     // -----------------------------
-
     const loadUsers = async () => {
-
         try {
-
             setError("");
-
             const data = await getAllUsers();
-
             setUsers(data);
-
         } catch (error) {
-
             setError(error.message);
         }
     };
 
-
     // Load users when application starts
-
     useEffect(() => {
-
         loadUsers();
-
     }, []);
-
 
     // -----------------------------
     // CREATE / UPDATE USER
     // -----------------------------
-
     const handleSubmit = async (userData) => {
 
         try {
@@ -103,11 +79,9 @@ function App() {
         }
     };
 
-
     // -----------------------------
     // DELETE USER
     // -----------------------------
-
     const handleDelete = async (userId) => {
 
         const confirmed = window.confirm(
@@ -137,11 +111,9 @@ function App() {
         }
     };
 
-
     // -----------------------------
     // GET USER BY ID
     // -----------------------------
-
     const handleSearch = async (userId) => {
 
         try {

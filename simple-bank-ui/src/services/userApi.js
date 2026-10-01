@@ -2,20 +2,16 @@ const API_URL = "http://127.0.0.1:5000/api/users";
 
 export async function getAllUsers() {
     const response = await fetch(API_URL);
-
     if (!response.ok) {
         throw new Error("Failed to get users");
     }
-
     return response.json();
 }
-
 
 export async function getUserById(userId) {
     const response = await fetch(
         `${API_URL}/${userId}`
     );
-
     if (!response.ok) {
         const error = await response.json();
         throw new Error(
@@ -26,7 +22,6 @@ export async function getUserById(userId) {
     return response.json();
 }
 
-
 export async function createUser(user) {
     const response = await fetch(API_URL, {
         method: "POST",
@@ -35,7 +30,6 @@ export async function createUser(user) {
         },
         body: JSON.stringify(user)
     });
-
     if (!response.ok) {
         const error = await response.json();
         throw new Error(
@@ -45,7 +39,6 @@ export async function createUser(user) {
 
     return response.json();
 }
-
 
 export async function updateUser(userId, user) {
     const response = await fetch(
@@ -58,7 +51,6 @@ export async function updateUser(userId, user) {
             body: JSON.stringify(user)
         }
     );
-
     if (!response.ok) {
         const error = await response.json();
         throw new Error(
@@ -69,7 +61,6 @@ export async function updateUser(userId, user) {
     return response.json();
 }
 
-
 export async function deleteUser(userId) {
     const response = await fetch(
         `${API_URL}/${userId}`,
@@ -77,7 +68,6 @@ export async function deleteUser(userId) {
             method: "DELETE"
         }
     );
-
     if (!response.ok) {
         const error = await response.json();
         throw new Error(
