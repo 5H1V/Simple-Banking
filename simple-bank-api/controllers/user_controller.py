@@ -1,19 +1,17 @@
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
+from fastapi import APIRouter, Depends, HTTPException
 
+from core.security import require_roles
 from models.user import User
+from schemas.user import UserRequest
 from services.user_service import UserService
 from repos.repositories import user_repository
 
 user_controller = APIRouter(
     prefix="/users",
-    tags=["Users"]
+    tags=["Users"],
+    dependencies=[Depends(require_roles("AdminToken"))]
 )
 user_service = UserService(user_repository)
-
-class UserRequest(BaseModel):
-    name: str
-    email: str
 
 @user_controller.get("")
 def get_all_users():

@@ -35,9 +35,20 @@ function App() {
         }
     };
 
-    // Load users when application starts
     useEffect(() => {
-        loadUsers();
+        let active = true;
+
+        getAllUsers()
+            .then((data) => {
+                if (active) setUsers(data);
+            })
+            .catch((requestError) => {
+                if (active) setError(requestError.message);
+            });
+
+        return () => {
+            active = false;
+        };
     }, []);
 
     // -----------------------------
@@ -182,6 +193,7 @@ function App() {
                 {/* Add / Edit */}
 
                 <UserForm
+                    key={selectedUser?.userId ?? "new-user"}
                     selectedUser={selectedUser}
                     onSubmit={handleSubmit}
                     onCancel={() =>

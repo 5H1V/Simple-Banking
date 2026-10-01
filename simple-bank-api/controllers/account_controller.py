@@ -1,6 +1,8 @@
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
+from fastapi import APIRouter, Depends, HTTPException
 
+from api.dependencies import get_current_principal
+from core.security import enforce_account_ownership
+from schemas.account import AmountRequest, CreateAccountRequest
 from repos.repositories import (
     user_repository,
     account_repository,
@@ -25,15 +27,23 @@ account_service = AccountService(
     transaction_service
 )
 
-class CreateAccountRequest(BaseModel):
-    userId: str
-    accountType: str
-
-class AmountRequest(BaseModel):
-    amount: float
+@account_controller.get("/me")
+def get_my_accounts(principal: dict = Depends(get_current_principal)):
+    return [
+        account.to_dict()
+        for account in account_service.get_accounts_for_user(principal["sub"])
+    ]
 
 @account_controller.post("", status_code=201)
-def create_account(data: CreateAccountRequest):
+def create_account(
+    data: CreateAccountRequest,
+    principal: dict = Depends(get_current_principal)
+):
+    if (
+        principal["role"] != "AdminToken"
+        and principal["sub"] != data.userId
+    ):
+        raise HTTPException(status_code=403, detail="You can only create your own accounts")
     account, error = account_service.create_account(data.userId, data.accountType)
     if error:
         raise HTTPException(status_code=404, detail=error)
@@ -41,7 +51,10 @@ def create_account(data: CreateAccountRequest):
     return account.to_dict()
 
 @account_controller.get("/{account_id}")
-def get_account(account_id: str):
+def get_account(
+    account_id: str,
+    principal: dict = Depends(get_current_principal)
+):
     account = account_service.get_account(account_id)
     if account is None:
         raise HTTPException(
@@ -49,10 +62,19 @@ def get_account(account_id: str):
             detail="Account not found"
         )
 
+    enforce_account_ownership(account, principal)
     return account.to_dict()
 
 @account_controller.post("/{account_id}/deposit")
-def deposit(account_id: str, data: AmountRequest):
+def deposit(
+    account_id: str,
+    data: AmountRequest,
+    principal: dict = Depends(get_current_principal)
+):
+    account = account_service.get_account(account_id)
+    if account is None:
+        raise HTTPException(status_code=404, detail="Account not found")
+    enforce_account_ownership(account, principal)
     account, error = account_service.deposit(account_id, data.amount)
     if error:
         if error == "Account not found":
@@ -68,7 +90,15 @@ def deposit(account_id: str, data: AmountRequest):
     return account.to_dict()
 
 @account_controller.post("/{account_id}/withdraw")
-def withdraw(account_id: str, data: AmountRequest):
+def withdraw(
+    account_id: str,
+    data: AmountRequest,
+    principal: dict = Depends(get_current_principal)
+):
+    account = account_service.get_account(account_id)
+    if account is None:
+        raise HTTPException(status_code=404, detail="Account not found")
+    enforce_account_ownership(account, principal)
     account, error = account_service.withdraw(
         account_id,
         data.amount
@@ -86,7 +116,14 @@ def withdraw(account_id: str, data: AmountRequest):
     return account.to_dict()
 
 @account_controller.get("/{account_id}/transactions")
-def get_transactions(account_id: str):
+def get_transactions(
+    account_id: str,
+    principal: dict = Depends(get_current_principal)
+):
+    account = account_service.get_account(account_id)
+    if account is None:
+        raise HTTPException(status_code=404, detail="Account not found")
+    enforce_account_ownership(account, principal)
     transactions, error = account_service.get_transactions(account_id)
     if error:
         raise HTTPException(

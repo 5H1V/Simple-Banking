@@ -1,7 +1,8 @@
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
-
-MONGO_URI = os.getenv("MONGO_URI")
-DATABASE_NAME = "simple_bank"
+from core.config import (
+    ADMIN_SETUP_KEY,
+    DATABASE_NAME,
+    JWT_ALGORITHM,
+    JWT_EXPIRE_MINUTES,
+    JWT_SECRET_KEY,
+    MONGO_URI,
+)

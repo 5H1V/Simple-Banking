@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 
 import { createAccount, getAccountById } from "../services/accountApi";
+import { getRole, getSession } from "../services/apiClient";
 import "./AccountsPage.css";
 
 function AccountDetails({ account }) {
@@ -31,7 +32,9 @@ function AccountDetails({ account }) {
 }
 
 function AccountsPage() {
-    const [userId, setUserId] = useState("");
+    const session = getSession();
+    const isCustomer = getRole() === "CustomerToken";
+    const [userId, setUserId] = useState(session?.userId ?? "");
     const [accountType, setAccountType] = useState("Checking");
     const [searchId, setSearchId] = useState("");
     const [createdAccount, setCreatedAccount] = useState(null);
@@ -52,7 +55,6 @@ function AccountsPage() {
         try {
             const account = await createAccount(userId.trim(), accountType);
             setCreatedAccount(account);
-            setUserId("");
         } catch (error) {
             setCreateError(error.message);
         } finally {
@@ -96,7 +98,7 @@ function AccountsPage() {
 
             <main className="accounts-main">
                 <h1>Accounts</h1>
-                <p className="accounts-intro">Create an account for a user or look up an existing account.</p>
+                <p className="accounts-intro">{isCustomer ? "Create an account for yourself or look up an existing account." : "Create an account for a user or look up an existing account."}</p>
 
                 <div className="accounts-grid">
                     <section className="account-panel">
@@ -108,9 +110,11 @@ function AccountsPage() {
                                 value={userId}
                                 onChange={(event) => setUserId(event.target.value)}
                                 required
+                                readOnly={isCustomer}
                                 disabled={creating}
                                 autoComplete="off"
                             />
+                            {isCustomer && <p className="accounts-intro">This is your User ID from your dashboard.</p>}
 
                             <label htmlFor="account-type">Account type</label>
                             <select

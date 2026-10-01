@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 function UserForm({
     selectedUser,
@@ -6,17 +6,8 @@ function UserForm({
     onCancel
 }) {
 
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
-    useEffect(() => {
-        if (selectedUser) {
-            setName(selectedUser.name);
-            setEmail(selectedUser.email);
-        } else {
-            setName("");
-            setEmail("");
-        }
-    }, [selectedUser]);
+    const [name, setName] = useState(selectedUser?.name ?? "");
+    const [email, setEmail] = useState(selectedUser?.email ?? "");
 
     const handleSubmit = (event) => {
         event.preventDefault();

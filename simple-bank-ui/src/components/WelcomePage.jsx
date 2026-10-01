@@ -8,9 +8,10 @@ function WelcomePage() {
             <header className="welcome-header">
                 <Link className="welcome-brand" to="/">Simple Bank</Link>
                 <nav aria-label="Main navigation">
-                    <Link to="/users">User Management</Link>
+                    <Link to="/login">Sign in</Link>
+                    <Link to="/register">Register</Link>
                     <Link to="/accounts">Accounts</Link>
-                    <Link to="/transactions">Deposit / Withdraw</Link>
+                    <Link to="/transactions">Transactions</Link>
                 </nav>
             </header>
 
@@ -19,10 +20,13 @@ function WelcomePage() {
                     <p className="welcome-eyebrow">Welcome to Simple Bank</p>
                     <h1 id="welcome-title">Click below to get started</h1>
                     <p className="welcome-description">
-                        Find, add, and update user records in one place.
+                        Manage your accounts, make transactions, and review your banking activity securely.
                     </p>
-                    <Link className="welcome-action" to="/users">
-                        Go to User Management
+                    <Link className="welcome-action" to="/register">
+                        Open a Customer Account
+                    </Link>
+                    <Link className="welcome-action" to="/login">
+                        Sign In
                     </Link>
                     <Link className="welcome-action" to="/accounts">
                         Create or View Accounts

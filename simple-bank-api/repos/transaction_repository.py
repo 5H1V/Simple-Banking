@@ -21,6 +21,18 @@ class TransactionRepository:
             for transaction in transactions
         ]
 
+    def find_all(self):
+        transactions = self.collection.find().sort("_id", -1)
+        return [
+            Transaction(
+                txn_id=str(transaction["_id"]),
+                account_id=transaction["account_id"],
+                txn_type=transaction["txn_type"],
+                amount=transaction["amount"]
+            )
+            for transaction in transactions
+        ]
+
     def save(self, transaction):
         if transaction.txn_id is None:
             result = self.collection.insert_one({

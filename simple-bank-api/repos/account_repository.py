@@ -19,6 +19,18 @@ class AccountRepository:
             for account in accounts
         ]
 
+    def find_by_user_id(self, user_id):
+        accounts = self.collection.find({"user_id": user_id})
+        return [
+            Account(
+                account_id=str(account["_id"]),
+                user_id=account["user_id"],
+                balance=account["balance"],
+                account_type=account["account_type"]
+            )
+            for account in accounts
+        ]
+
     def find_by_id(self, account_id):
         try:
             object_id = ObjectId(account_id)

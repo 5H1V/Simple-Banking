@@ -15,3 +15,10 @@ class TransactionService:
 
     def get_transactions(self, account_id):
         return self.transaction_repository.find_by_account_id(account_id)
+
+    def get_transactions_for_accounts(self, accounts):
+        return [
+            transaction
+            for account in accounts
+            for transaction in self.get_transactions(account.account_id)
+        ]

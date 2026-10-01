@@ -18,6 +18,9 @@ class AccountService:
     def get_account(self, account_id):
         return self.account_repository.find_by_id(account_id)
 
+    def get_accounts_for_user(self, user_id):
+        return self.account_repository.find_by_user_id(user_id)
+
     def deposit(self, account_id, amount):
         if amount <= 0:
             return None, "Deposit amount must be positive"

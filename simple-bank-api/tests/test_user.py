@@ -1,73 +1,50 @@
-from app import app
+from models.user import User
+from services.user_service import UserService
 
-def test_get_all_customers():
-    client = app.test_client()
-    response = client.get("/api/customers")
-    
-    assert response.status_code == 200
-    assert isinstance(response.json, list)
 
-def test_get_customer():
-    client = app.test_client()
-    response = client.get("/api/customers/1")
-    
-    assert response.status_code == 200
-    assert response.json["id"]=="1"
+class FakeUserRepository:
+    def __init__(self):
+        self.users = {}
+        self.next_id = 0
 
-def test_get_customer_not_found():
-    client = app.test_client()
-    response = client.get("/api/customers/999")
-    
-    assert response.status_code == 404
+    def find_all(self):
+        return list(self.users.values())
 
-def test_create_customer():
-    client = app.test_client()
-    response = client.post(
-        "/api/customers",
-        json={
-            "id": "100",
-            "name": "Test Customer"
-            })
+    def find_by_id(self, user_id):
+        return self.users.get(user_id)
 
-    assert response.status_code == 201
-    assert response.json["id"]=="100"
-    assert response.json["name"]=="Test Customer"
+    def find_by_email(self, email):
+        return next(
+            (user for user in self.users.values() if user.email == email),
+            None
+        )
 
-def test_create_customer_missing_data():
-    client = app.test_client()
-    response = client.post(
-        "/api/customers",
-        json={
-            "id": "101"
-            })
+    def save(self, user):
+        if user.user_id is None:
+            self.next_id += 1
+            user.user_id = str(self.next_id)
+        self.users[user.user_id] = user
+        return user
 
-    assert response.status_code == 400
+    def delete_by_id(self, user_id):
+        return self.users.pop(user_id, None) is not None
 
-def test_update_customer():
-    client = app.test_client()
-    response = client.put(
-        "/api/customers/1",
-        json={
-            "name": "Updated Customer"
-            })
 
-    assert response.status_code == 200
-    assert response.json["name"] == "Updated Customer"
-
-def test_update_customer_not_found():
-    client = app.test_client()
-    response = client.put(
-        "/api/customers/999",
-        json={"name": "Updated Customer"}
+def test_user_service_creates_updates_and_deletes_users():
+    service = UserService(FakeUserRepository())
+    created, error = service.create_user(
+        User(name="Casey User", email="casey@example.test")
     )
-    assert response.status_code == 404
+    assert error is None
+    assert created.user_id == "1"
 
-def test_delete_customer():
-    client = app.test_client()
-    response = client.delete("/api/customers/2")
-    assert response.status_code == 200
+    updated, error = service.update_user(
+        created.user_id,
+        "Casey Updated",
+        "updated@example.test"
+    )
+    assert error is None
+    assert updated.name == "Casey Updated"
 
-def test_delete_customer_not_found():
-    client = app.test_client()
-    response = client.delete("/api/customers/999")
-    assert response.status_code == 404
+    assert service.delete_user(created.user_id)
+    assert service.get_user_by_id(created.user_id) is None
