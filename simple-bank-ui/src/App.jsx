@@ -13,6 +13,7 @@ import {
     deleteUser
 } from "./services/userApi";
 
+import ThemeToggle from "./components/common/ThemeToggle";
 import "./App.css";
 
 function App() {
@@ -165,6 +166,9 @@ function App() {
                     <Link to="/accounts">Accounts</Link>
                     {" | "}
                     <Link to="/transactions">Deposit / Withdraw</Link>
+                    <Link to="/admin/dashboard">Admin Dashboard</Link>
+                    <Link to="/admin/fraud-alerts">Fraud Monitoring</Link>
+                    <ThemeToggle />
                 </nav>
 
             </header>

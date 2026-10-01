@@ -25,7 +25,11 @@ def test_api_routes_are_registered_under_api_prefix():
         ("/api/auth/admin/setup", "POST"),
         ("/api/admin/users", "GET"),
         ("/api/admin/accounts", "GET"),
-        ("/api/admin/transactions", "GET")
+        ("/api/admin/transactions", "GET"),
+        ("/api/accounts/transfer", "POST"),
+        ("/api/analytics/me/cash-flow", "GET"),
+        ("/api/admin/fraud-alerts", "GET"),
+        ("/api/admin/fraud-alerts/{alert_id}/review", "PATCH")
     }
 
     assert expected_routes <= routes

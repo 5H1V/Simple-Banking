@@ -1,6 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel, Field
+from pymongo.errors import PyMongoError
 
 from api.dependencies import get_current_principal
+from database import client, db
 from core.security import enforce_account_ownership
 from schemas.account import AmountRequest, CreateAccountRequest
 from repos.repositories import (
@@ -11,6 +14,7 @@ from repos.repositories import (
 
 from services.account_service import AccountService
 from services.transaction_service import TransactionService
+from services.transfer_service import TransferService
 
 account_controller = APIRouter(
     prefix="/accounts",
@@ -20,6 +24,8 @@ account_controller = APIRouter(
 transaction_service = TransactionService(
     transaction_repository
 )
+
+transfer_service = TransferService(client, db)
 
 account_service = AccountService(
     account_repository,
@@ -49,6 +55,33 @@ def create_account(
         raise HTTPException(status_code=404, detail=error)
 
     return account.to_dict()
+
+
+
+class TransferRequest(BaseModel):
+    fromAccountId: str
+    toAccountId: str
+    amount: float = Field(gt=0, allow_inf_nan=False)
+
+
+@account_controller.post("/transfer")
+def transfer_between_accounts(
+    data: TransferRequest,
+    principal: dict = Depends(get_current_principal),
+):
+    source = account_service.get_account(data.fromAccountId)
+    destination = account_service.get_account(data.toAccountId)
+    if source is None or destination is None:
+        raise HTTPException(status_code=404, detail="Source or destination account was not found")
+    enforce_account_ownership(source, principal)
+    enforce_account_ownership(destination, principal)
+    try:
+        return transfer_service.transfer(data.fromAccountId, data.toAccountId, data.amount)
+    except ValueError as error:
+        raise HTTPException(status_code=400, detail=str(error)) from error
+    except PyMongoError as error:
+        raise HTTPException(status_code=503, detail="Transfers require MongoDB multi-document transaction support. Configure a replica set or MongoDB Atlas deployment.") from error
+
 
 @account_controller.get("/{account_id}")
 def get_account(

@@ -9,11 +9,8 @@ class DashboardService:
     def get_transactions(self, user_id):
         accounts = self.get_accounts(user_id)
         return [
-            {
-                "txnId": transaction.txn_id,
-                "accountId": transaction.account_id,
-                "type": transaction.txn_type,
-                "amount": transaction.amount
-            }
-            for transaction in self.transaction_service.get_transactions_for_accounts(accounts)
+            {"txnId": txn.txn_id, "accountId": txn.account_id, "type": txn.txn_type,
+             "amount": txn.amount, "createdAt": txn.created_at.isoformat() if txn.created_at else None,
+             "transferId": txn.transfer_id, "relatedAccountId": txn.related_account_id}
+            for txn in self.transaction_service.get_transactions_for_accounts(accounts)
         ]

@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 
 import { createAccount, getAccountById } from "../services/accountApi";
 import { getRole, getSession } from "../services/apiClient";
+import ThemeToggle from "./common/ThemeToggle";
 import "./AccountsPage.css";
 
 function AccountDetails({ account }) {
@@ -93,6 +94,8 @@ function AccountsPage() {
                     <Link to="/">Home</Link>
                     <Link to="/users">User Management</Link>
                     <Link to="/transactions">Deposit / Withdraw</Link>
+                    <Link to="/dashboard">Dashboard</Link>
+                    <ThemeToggle />
                 </nav>
             </header>
 

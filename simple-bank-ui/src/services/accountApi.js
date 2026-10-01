@@ -40,3 +40,26 @@ export function getAdminAccounts() {
 export function getAdminTransactions() {
     return apiRequest("/admin/transactions");
 }
+
+
+export function transferBetweenAccounts(fromAccountId, toAccountId, amount) {
+    return apiRequest("/accounts/transfer", {
+        method: "POST",
+        body: JSON.stringify({ fromAccountId, toAccountId, amount: Number(amount) })
+    });
+}
+
+export function getMyCashFlow(days = 90) {
+    return apiRequest(`/analytics/me/cash-flow?days=${encodeURIComponent(days)}`);
+}
+
+export function getAdminFraudAlerts() {
+    return apiRequest("/admin/fraud-alerts");
+}
+
+export function reviewAdminFraudAlert(alertId, status, note = "") {
+    return apiRequest(`/admin/fraud-alerts/${encodeURIComponent(alertId)}/review`, {
+        method: "PATCH",
+        body: JSON.stringify({ status, note })
+    });
+}

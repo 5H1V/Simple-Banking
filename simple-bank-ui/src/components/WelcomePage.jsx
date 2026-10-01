@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 
+import ThemeToggle from "./common/ThemeToggle";
 import "./WelcomePage.css";
 
 function WelcomePage() {
@@ -12,6 +13,7 @@ function WelcomePage() {
                     <Link to="/register">Register</Link>
                     <Link to="/accounts">Accounts</Link>
                     <Link to="/transactions">Transactions</Link>
+                    <ThemeToggle />
                 </nav>
             </header>
 

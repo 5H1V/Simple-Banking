@@ -7,6 +7,9 @@ import NotFound from "../components/NotFound.jsx";
 import ProtectedRoute from "../components/ProtectedRoute.jsx";
 import TransactionsPage from "../components/TransactionsPage.jsx";
 import WelcomePage from "../components/WelcomePage.jsx";
+import TransferPage from "../components/TransferPage.jsx";
+import AnalyticsPage from "../components/AnalyticsPage.jsx";
+import FraudAlertsPage from "../components/FraudAlertsPage.jsx";
 
 export default function AppRouter() {
     return (
@@ -23,7 +26,12 @@ export default function AppRouter() {
                 <Route element={<ProtectedRoute />}>
                     <Route path="/accounts" element={<AccountsPage />} />
                     <Route path="/transactions" element={<TransactionsPage />} />
+                </Route>
+
+                <Route element={<ProtectedRoute roles={["CustomerToken"]} />}>
                     <Route path="/dashboard" element={<DashboardPage />} />
+                    <Route path="/transfers" element={<TransferPage />} />
+                    <Route path="/analytics" element={<AnalyticsPage />} />
                 </Route>
 
                 <Route element={<ProtectedRoute roles={["AdminToken"]} />}>
@@ -32,6 +40,7 @@ export default function AppRouter() {
                         path="/admin/dashboard"
                         element={<DashboardPage admin />}
                     />
+                    <Route path="/admin/fraud-alerts" element={<FraudAlertsPage />} />
                 </Route>
 
                 <Route path="*" element={<NotFound />} />

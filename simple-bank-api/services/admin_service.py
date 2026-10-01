@@ -19,7 +19,10 @@ class AdminService:
                 "txnId": transaction.txn_id,
                 "accountId": transaction.account_id,
                 "type": transaction.txn_type,
-                "amount": transaction.amount
+                "amount": transaction.amount,
+                "createdAt": transaction.created_at.isoformat() if transaction.created_at else None,
+                "transferId": transaction.transfer_id,
+                "relatedAccountId": transaction.related_account_id
             }
             for transaction in self.transaction_repository.find_all()
         ]

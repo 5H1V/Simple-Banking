@@ -32,13 +32,16 @@ Full-stack project using React + Vite, FastAPI, and MongoDB Atlas. The backend u
 - `/dashboard` customer-only dashboard
 - `/admin/dashboard` admin-only dashboard
 - `/accounts` authenticated account creation and lookup
-- `/transactions` authenticated deposit, withdrawal, and transaction history
+- `/transactions` authenticated deposit and withdrawal workflow
+- `/transfers` customer-only transfers between owned accounts
+- `/analytics` customer-only, user-wide deposit/withdrawal analytics
+- `/admin/fraud-alerts` admin-only anomaly and fraud-alert review
 - `/users` admin-only user management
 
 ## Security notes
 
-Passwords are stored as Argon2id hashes. The backend issues expiring JWTs with `CustomerToken` or `AdminToken` roles and checks permissions server-side. Customer account endpoints verify ownership; React route guards are not the security boundary. Use HTTPS outside local development. This is an educational project, not a production-ready banking platform: transaction atomicity, stronger operational controls, and financial-grade money handling would need additional work.
+Passwords are stored as Argon2id hashes. The backend issues expiring JWTs with `CustomerToken` or `AdminToken` roles and checks permissions server-side. Customer account endpoints verify ownership; React route guards are not the security boundary. Use HTTPS outside local development. This is an educational project, not a production-ready banking platform. Account transfers use MongoDB multi-document transactions and therefore require a replica-set or sharded MongoDB deployment. Other banking operations, financial-grade money handling, idempotency, operational monitoring, and model validation need additional work before any real-world use.
 
 ## Tests
 
-From `simple-bank-api`, run `PYTHONPATH=. pytest -q`. The tests cover API route registration, authentication workflows, user-service behavior, password hashing, and role/ownership checks. They do not require a running MongoDB server.
+From `simple-bank-api`, run `PYTHONPATH=. pytest -q`. The tests cover API route registration, user-wide cash-flow aggregation, authentication workflows, user-service behavior, password hashing, and role/ownership checks. They do not require a running MongoDB server.

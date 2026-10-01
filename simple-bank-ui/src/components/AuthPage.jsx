@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { loginAdmin, loginCustomer, registerCustomer, setupAdmin } from "../services/authApi";
 import { getRole } from "../services/apiClient";
+import ThemeToggle from "./common/ThemeToggle";
 import "./AuthPage.css";
 
 export default function AuthPage({ mode = "login" }) {
@@ -30,7 +31,7 @@ export default function AuthPage({ mode = "login" }) {
     }
 
     return <main className="auth-shell">
-        <Link className="auth-brand" to="/">Simple Bank</Link>
+        <div className="auth-topbar"><Link className="auth-brand" to="/">Simple Bank</Link><ThemeToggle /></div>
         <section className="auth-card">
             <p className="auth-kicker">SECURE BANKING PORTAL</p>
             <h1>{isSetup ? "Set up the administrator" : isRegister ? "Create your account" : "Welcome back"}</h1>
